@@ -34,7 +34,6 @@ nav a:hover{
     color: var(--secondaryColor);
 }
 
-
 header .nav-btn {
     padding: 5px;
     cursor: pointer;
@@ -82,5 +81,5 @@ header .nav-btn {
     nav a{
         font-size: 1.5rem;
     }
-
+    
 }

@@ -1,14 +1,7 @@
 import React, { Component } from "react";
 
-class SearchBar extends Component {
-  render() {
-    //HTML을 웹 페이지에 렌더링 한다.
-    return (
-      <div>
-        
-      </div>
-    );
-  }
+function SearchBar() {
+  return <></>;
 }
 
 export default SearchBar;
