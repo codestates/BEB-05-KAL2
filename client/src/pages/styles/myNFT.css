@@ -1,5 +1,19 @@
-.test--page {
-  padding: 10%;
-  width: 100%;
+.myNFT--wrapper {
+  display: flex;
+  justify-content: space-between;
+  height: auto;
+}
+
+.myNFT--article {
+  margin: 8% 5% 20% 5%;
+  width: 80%;
   height: 100vh;
+}
+
+.myNFT--contents {
+  display: flex;
+  justify-content: left;
+  flex-wrap: wrap;
+  width: 100%;
+  height: 90%;
 }

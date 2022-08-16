@@ -17,14 +17,19 @@ const status = [
   "NEW",
 ];
 
-function RegistNFT() {
+function RegistNFT({ address }) {
+  console.log("addr", address);
+  if (address === undefined)
+    address = "0xbcC230bEC953aF066d730F5325F0f5EE21Cb8911";
+
+  const [imageSrc, setImageSrc] = useState('');    
   const [dataObj, setInput] = useState({
     NFTFile: "",
     NFTName: "",
     ExLink: "",
     NFTDesc: "",
     SellPrice: "",
-    Category: "",
+    Category: 0,
     Status: "",
   });
 
@@ -33,7 +38,7 @@ function RegistNFT() {
     setInput({
       ...dataObj,
       [e.target.name]: e.target.value,
-    });
+    });    
   };
 
   const createMetaData = async () => {
@@ -51,18 +56,19 @@ function RegistNFT() {
     console.log(pinata_gwUrl+upLoadIPFSMetaDataHash); // JSON 파일 경로
 
     //ADD DATA TO FIRESTORE
-      const docData = {      
-          name: dataObj.NFTName,
-          description: dataObj.NFTDesc,
-          price: dataObj.SellPrice,
-          NFTUrl: upLoadIPFSUrl,
-          MetaDataUrl : pinata_gwUrl+upLoadIPFSMetaDataHash,
-          category : dataObj.Category,
-          status : 0
-        
-      };
+    const docData = {      
+        name: dataObj.NFTName,
+        description: dataObj.NFTDesc,
+        price: dataObj.SellPrice,
+        NFTUrl: upLoadIPFSUrl,
+        MetaDataUrl : pinata_gwUrl+upLoadIPFSMetaDataHash,
+        category : dataObj.Category,
+        status : 0
+      
+    };
 
-    await setDoc(doc(db, "user", "0xbcC230bEC953aF066d730F5325F0f5EE21Cb8911","NFT",upLoadIPFSMetaDataHash), docData);
+    await setDoc(doc(db, "user", address,"NFT",upLoadIPFSMetaDataHash), docData);
+    await setDoc(doc(db, "NFT",upLoadIPFSMetaDataHash), docData);
     
   };
 
@@ -71,7 +77,18 @@ function RegistNFT() {
       ...dataObj,
       [e.target.name]: e.target.files[0],
     });
-    console.log(e.target.name, e.target.files[0]);
+    preview(e.target.files[0]);
+    //console.log(e.target.name, e.target.files[0]);
+  };
+  const preview = (fileBlob) => {
+    const reader = new FileReader();  
+    reader.readAsDataURL(fileBlob);
+    return new Promise((resolve) => {
+      reader.onload = () => {
+        setImageSrc(reader.result);
+        resolve();
+      };
+    });
   };
 
   const onSubmit = async (e) => {
@@ -87,6 +104,20 @@ function RegistNFT() {
       if (dataObj.NFTFile) console.log("Please fill all the fields");
       else console.log("Please upload a file");
     }
+    reset();
+  };
+
+  const reset = () => {
+    setInput({
+      NFTFile: "",
+      NFTName: "",
+      ExLink: "",
+      NFTDesc: "",
+      SellPrice: "",
+      Category: 0,
+      Status: "",
+    });
+    setImageSrc('');    
   };
 
   return (
@@ -101,12 +132,14 @@ function RegistNFT() {
                 <p />
                 Upload File
                 <div className="lbox1">
+                {imageSrc ? ([<img src={imageSrc} alt="preview-img" />,
+                  <button onClick={() => setImageSrc('')}>Remove</button>]):
                   <input
                     type="file"
                     name="NFTFile"
                     className="input1"
                     onChange={onLoadFile}
-                  />
+                  />}
                 </div>
               </div>
               <div className="contents1">
@@ -118,6 +151,7 @@ function RegistNFT() {
                     name="NFTName"
                     className="input1"
                     onChange={onChange}
+                    value={dataObj.NFTName}
                   />
                 </div>
               </div>
@@ -131,10 +165,10 @@ function RegistNFT() {
                         <input
                           type="radio"
                           id="select"
-                          name="category"
+                          name="Category"
                           className="category--check"
                           onChange={onChange}
-                          value={idx}
+                          value={idx}                          
                         />
                         <label>{e}</label>
                       </div>
@@ -151,9 +185,10 @@ function RegistNFT() {
                     name="NFTDesc"
                     className="input1"
                     onChange={onChange}
+                    value={dataObj.NFTDesc}
                   />
                 </div>
-              </div>
+              </div><button onClick={() => reset()}>초기화</button>
               <div className="contents1">
                 <p />
                 Sell Price (only eth)
@@ -163,6 +198,7 @@ function RegistNFT() {
                     name="SellPrice"
                     className="input1"
                     onChange={onChange}
+                    value={dataObj.SellPrice}
                   />
                 </div>
               </div>
@@ -171,9 +207,9 @@ function RegistNFT() {
                 <p />
                 <div className="button" onClick={onSubmit}>
                   <p className="btnText">Create</p>
-                  <div className="btnTwo">
+                  {/* <div className="btnTwo">
                     <p className="btnText2">now</p>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>
